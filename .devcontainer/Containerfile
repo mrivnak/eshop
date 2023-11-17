@@ -1,0 +1,59 @@
+FROM ubuntu:mantic
+
+ARG TARGETARCH
+
+# Versions for manually installed packages
+ENV GRADLE_VER=8.4
+
+# Set locale
+RUN apt update && apt install -y locales
+RUN echo 'en_US.UTF-8 UTF-8' > /etc/locale.gen && locale-gen
+ENV LANG en_US.UTF-8  
+ENV LANGUAGE en_US:en  
+ENV LC_ALL en_US.UTF-8
+
+# Ubuntu dependencies
+RUN apt update && apt upgrade -y
+RUN apt install --no-install-recommends -y \
+    apt-transport-https \
+    build-essential \
+    ca-certificates \
+    curl \
+    dotnet-sdk-8.0 \
+    git \
+    golang \
+    gpg \
+    libsqlite3-dev \
+    nodejs \
+    npm \
+    openjdk-21-jdk \
+    pkg-config \
+    python3-django \
+    python3-djangorestframework \
+    python3-termcolor \
+    python-is-python3 \
+    unzip \
+    wget
+
+# Gradle 
+RUN wget https://services.gradle.org/distributions/gradle-${GRADLE_VER}-bin.zip -P /tmp
+RUN unzip -d /opt/gradle /tmp/gradle-${GRADLE_VER}-bin.zip
+ENV GRADLE_HOME=/opt/gradle/gradle-${GRADLE_VER}
+
+# Rustup
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- --no-modify-path --profile default --default-toolchain stable -y
+ENV PATH="$PATH:/root/.cargo/bin"
+RUN rustup target add wasm32-unknown-unknown
+
+# Cargo tools
+RUN cargo install dioxus-cli
+RUN cargo install diesel_cli --no-default-features --features sqlite
+RUN cargo install trunk
+
+# PNPM
+RUN npm install -g pnpm
+
+RUN apt clean
+
+COPY . /app
+WORKDIR /app

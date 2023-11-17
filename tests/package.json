@@ -1,0 +1,7 @@
+{
+	"type": "module",
+	"dependencies": {
+		"@cucumber/cucumber": "^10.0.1",
+		"node-fetch": "^3.3.2"
+	}
+}

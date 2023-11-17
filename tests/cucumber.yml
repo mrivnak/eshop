@@ -1,0 +1,9 @@
+default:
+  parallel: 1
+  format: 
+    - summary
+  paths:
+    - "./features/**/*.feature"
+  import:
+    - "./features/support/**/*.js"
+  strict: true

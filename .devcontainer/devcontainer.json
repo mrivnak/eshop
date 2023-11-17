@@ -1,0 +1,49 @@
+{
+    "build": {
+        // Path is relataive to the devcontainer.json file.
+        "dockerfile": "./Containerfile"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                // Elixir
+                "jakebecker.elixir-ls",
+
+                // Go
+                "jeff-hykin.better-go-syntax",
+                "golang.go",
+
+                // .NET
+                "ms-dotnettools.vscode-dotnet-pack",
+                "ms-dotnettools.csharp",
+                "ms-dotnettools.csdevkit",
+
+                // Node
+                "jeff-hykin.better-js-syntax",
+                "dbaeumer.vscode-eslint",
+                "esbenp.prettier-vscode",
+
+                // Python
+                "ms-python.black-formatter",
+                "ms-python.vscode-pylance",
+                "ms-python.pylint",
+                "ms-python.python",
+
+                // Rust
+                "vadimcn.vscode-lldb",
+                "tamasfe.even-better-toml",
+                "rust-lang.rust-analyzer",
+
+                // Svelte
+                "svelte.svelte-vscode",
+
+                // Tests
+                "alexkrechik.cucumber",
+
+                // Vue
+                "vue.vscode-typescript-vue-plugin",
+                "vue.volar"
+            ]
+        }
+    }
+}
