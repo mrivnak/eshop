@@ -14,6 +14,9 @@ jobs:
   test:
     name: Run Integration Tests
     runs-on: ubuntu-latest
+    permissions:
+      checks: write
+      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -33,7 +36,8 @@ jobs:
       - name: Copy test results
         run: |
           mkdir test_results
-          docker cp tests:/app/tests/test_results test_results
+          docker cp tests:/app/tests/test_results test_results/.
+          ls test_results
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
