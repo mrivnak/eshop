@@ -20,7 +20,7 @@ jobs:
 
       - name: Build container
         run:
-          docker build -t integration-tests -f .devcontainer/Containerfile
+          docker build -t integration-tests -f .devcontainer/Containerfile .
 
       - name: Run integration tests
         run: docker run --name tests integration-tests ./run_tests.py
