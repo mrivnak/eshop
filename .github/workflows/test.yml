@@ -1,0 +1,37 @@
+name: Integration Tests Action
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  test:
+    name: Run Integration Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build container
+        run:
+          docker build -t integration-tests -f .devcontainer/Containerfile
+
+      - name: Run integration tests
+        run: docker run --name tests integration-tests ./run_tests.py
+
+      - name: Copy test results
+        run: 
+          mkdir test_results
+          docker cp tests:/app/tests/test_results test_results/.
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          check_name: API Integration Tests
+          files: test_results/*.xml

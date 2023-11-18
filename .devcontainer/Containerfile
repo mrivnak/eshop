@@ -57,3 +57,6 @@ RUN apt clean
 
 COPY . /app
 WORKDIR /app
+
+RUN cd backend/express; pnpm install
+RUN cd tests; pnpm install

@@ -14,6 +14,7 @@ class TestSetup:
     """Test Setup, build, run and stop the backend"""
 
     name: str
+    short: str
     host: str
     dir: str
     build: List[str]
@@ -50,7 +51,7 @@ def stop_server(proc: subprocess.Popen):
         proc.kill()
 
 
-def run_integration_tests(host: str):
+def run_integration_tests(label: str, host: str):
     """Run integration tests
 
     Args:
@@ -59,7 +60,15 @@ def run_integration_tests(host: str):
     Returns:
         TestResult: test result
     """
-    cmd = ["pnpm", "exec", "cucumber-js", "--format", "summary"]
+    cmd = [
+        "pnpm",
+        "exec",
+        "cucumber-js",
+        "--format",
+        "summary",
+        "--format",
+        f"junit:test_results/{label}.xml",
+    ]
     env = dict(os.environ)
     env.update({"API_URL": host})
 
@@ -69,6 +78,7 @@ def run_integration_tests(host: str):
 setups = [
     TestSetup(
         "C# (ASP.NET)",
+        "asp.net",
         "127.0.0.1:5000",
         "backend/asp.net",
         ["dotnet", "build", "EShop/EShop.csproj", "-c", "Release"],
@@ -76,6 +86,7 @@ setups = [
     ),
     TestSetup(
         "Go (Gin)",
+        "gin",
         "127.0.0.1:8080",
         "backend/gin",
         ["go", "build", "."],
@@ -83,6 +94,7 @@ setups = [
     ),
     TestSetup(
         "Rust (Axum)",
+        "axum",
         "127.0.0.1:3000",
         "backend/axum",
         ["cargo", "build", "--release"],
@@ -90,6 +102,7 @@ setups = [
     ),
     TestSetup(
         "Node.js (Express)",
+        "express",
         "127.0.0.1:3000",
         "backend/express",
         ["pnpm", "run", "build"],
@@ -97,6 +110,7 @@ setups = [
     ),
     TestSetup(
         "Java (Spring Boot)",
+        "spring",
         "127.0.0.1:8080",
         "backend/spring",
         ["./gradlew", "build"],
@@ -104,6 +118,7 @@ setups = [
     ),
     TestSetup(
         "Python (Django)",
+        "django",
         "127.0.0.1:8000",
         "backend/django",
         [],
@@ -126,7 +141,7 @@ def main():
             )
         print(f"Running tests for {colored(setup.name, 'blue')}")
         proc = start_server(setup.run, setup.dir, env)
-        run_integration_tests(setup.host)
+        run_integration_tests(setup.short, setup.host)
         stop_server(proc)
 
 
