@@ -32,9 +32,9 @@ jobs:
         run: docker run --name tests integration-tests ./run_tests.py
 
       - name: Copy test results
-        run: 
+        run: |
           mkdir test_results
-          docker cp tests:/app/tests/test_results test_results/.
+          docker cp tests:/app/tests/test_results test_results
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v2
