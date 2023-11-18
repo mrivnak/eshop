@@ -19,7 +19,7 @@ RUN apt install --no-install-recommends -y \
     build-essential \
     ca-certificates \
     curl \
-    dotnet-sdk-8.0 \
+    dotnet-sdk-7.0 \
     git \
     golang \
     gpg \

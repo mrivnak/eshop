@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-import json
+
 import os
+import signal
 import subprocess
 import time
 from dataclasses import dataclass
 from typing import Dict, List
 from termcolor import colored
+
 
 @dataclass
 class TestSetup:
@@ -16,16 +18,6 @@ class TestSetup:
     dir: str
     build: List[str]
     run: List[str]
-
-
-@dataclass
-class TestResult:
-    """Test Result, hold the overall result and individual pass/fail numbers"""
-
-    passed: bool
-    num_passed: int
-    num_skipped: int
-    num_failed: int
 
 
 def start_server(cmd: List[str], pwd: str, env: Dict) -> subprocess.Popen:
@@ -51,12 +43,14 @@ def stop_server(proc: subprocess.Popen):
     Args:
         proc (subprocess.Popen): Process to terminate
     """
-    proc.terminate()
+    proc.send_signal(signal.SIGTERM)
+    time.sleep(1)  # wait for server to stop
     if proc.poll() is None:
+        print("terminating process failed, killing process")
         proc.kill()
 
 
-def run_integration_tests(host: str) -> TestResult:
+def run_integration_tests(host: str):
     """Run integration tests
 
     Args:
@@ -65,33 +59,11 @@ def run_integration_tests(host: str) -> TestResult:
     Returns:
         TestResult: test result
     """
-    cmd = ["pnpm", "exec", "cucumber-js", "--format", "message"]
+    cmd = ["pnpm", "exec", "cucumber-js", "--format", "summary"]
     env = dict(os.environ)
     env.update({"API_URL": host})
 
-    result = subprocess.run(
-        cmd,
-        cwd="./tests",
-        env=env,
-        check=False,
-        capture_output=True,
-    )
-
-    messages = [json.loads(s) for s in result.stdout.decode("utf-8").splitlines()]
-    test_finished_messages = [m for m in messages if "testStepFinished" in m]
-
-    passed = 0
-    skipped = 0
-    failed = 0
-    for msg in test_finished_messages:
-        if msg["testStepFinished"]["testStepResult"]["status"] == "PASSED":
-            passed += 1
-        elif msg["testStepFinished"]["testStepResult"]["status"] == "SKIPPED":
-            skipped += 1
-        elif msg["testStepFinished"]["testStepResult"]["status"] == "FAILED":
-            failed += 1
-
-    return TestResult(result.returncode == 0, passed, skipped, failed)
+    subprocess.run(cmd, cwd="./tests", env=env, check=False)
 
 
 setups = [
@@ -121,7 +93,7 @@ setups = [
         "127.0.0.1:3000",
         "backend/express",
         ["pnpm", "run", "build"],
-        ["pnpm", "run","start"],
+        ["node", "dist/index.js"],
     ),
     TestSetup(
         "Java (Spring Boot)",
@@ -129,7 +101,14 @@ setups = [
         "backend/spring",
         ["./gradlew", "build"],
         ["./gradlew", "bootRun"],
-    )
+    ),
+    TestSetup(
+        "Python (Django)",
+        "127.0.0.1:8000",
+        "backend/django",
+        [],
+        ["./venv/bin/python", "manage.py", "runserver"],
+    ),
 ]
 
 
@@ -140,22 +119,15 @@ def main():
 
     for setup in setups:
         print("")
-        print(f"Building {setup.name}")
-        subprocess.run(
-            setup.build, cwd=setup.dir, env=env, check=True, capture_output=True
-        )
+        if setup.build:
+            print(colored(f"Building {setup.name}", attrs=["dark"]))
+            subprocess.run(
+                setup.build, cwd=setup.dir, env=env, check=True, capture_output=True
+            )
         print(f"Running tests for {colored(setup.name, 'blue')}")
         proc = start_server(setup.run, setup.dir, env)
-        result = run_integration_tests(setup.host)
+        run_integration_tests(setup.host)
         stop_server(proc)
-
-        if result.passed:
-            print(colored("All steps passed", "green"))
-        else:
-            print(colored("Some steps failed", "red"))
-        print(
-            f"Passed: {result.num_passed}, Skipped: {result.num_skipped}, Failed: {result.num_failed}"
-        )
 
 
 if __name__ == "__main__":
