@@ -1,7 +1,8 @@
 {
     "build": {
         // Path is relataive to the devcontainer.json file.
-        "dockerfile": "./Containerfile"
+        "dockerfile": "./Containerfile",
+        "context": ".."
     },
     "customizations": {
         "vscode": {

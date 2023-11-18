@@ -58,6 +58,6 @@ COPY . /app
 WORKDIR /app
 
 # Install project dependencies
-RUN cd backend/express; pnpm install
-RUN cd tests; pnpm install
-RUN cd backend/django; python -m venv venv; ./venv/bin/pip install -r requirements.txt
+RUN pnpm install -C backend/express
+RUN pnpm install -C tests
+RUN cd backend/django; python -m venv venv; venv/bin/python -m pip install -r requirements.txt
