@@ -18,15 +18,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Cache Docker images.
-        uses: ScribeMD/docker-cache@0.3.6
-        if: ${{ github.run_attempt }} == 1
-        with:
-          key: docker-${{ runner.os }}
-
       - name: Build container
         run:
-          docker build -t integration-tests -f .devcontainer/Containerfile .
+          docker buildx build 
+            -t integration-tests 
+            -f .devcontainer/Containerfile
+            --cache-to type=gha
+            --cache-from type=gha
+            .
 
       - name: Run integration tests
         run: docker run --name tests integration-tests ./run_tests.py
