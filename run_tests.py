@@ -122,7 +122,7 @@ setups = [
         "127.0.0.1:8000",
         "backend/django",
         [],
-        ["./venv/bin/python", "manage.py", "runserver"],
+        ["python", "manage.py", "runserver"],
     ),
 ]
 
@@ -130,7 +130,6 @@ setups = [
 def main():
     """Main function"""
     env = dict(os.environ)
-    env.update({"SQLITE_DATABASE_FILE": "tests/db/db.sqlite"})
 
     for setup in setups:
         print("")

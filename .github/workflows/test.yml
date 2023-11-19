@@ -31,7 +31,7 @@ jobs:
             .
 
       - name: Run integration tests
-        run: docker run --name tests integration-tests ./run_tests.py
+        run: docker run --name tests -e ADMIN_USERNAME=${{ secrets.ADMIN_USERNAME }} -e ADMIN_PASSWORD=${{ secrets.ADMIN_PASSWORD }}  integration-tests ./run_tests.py
 
       - name: Copy test results
         run: |
