@@ -31,7 +31,7 @@ RUN apt install --no-install-recommends -y \
     python3-dotenv \
     python3-fastapi \
     python3-termcolor \
-    pythoh3-uvicorn \
+    python3-uvicorn \
     python3-venv \
     python-is-python3 \
     unzip \
