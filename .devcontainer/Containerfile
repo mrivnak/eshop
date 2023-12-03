@@ -28,13 +28,14 @@ RUN apt install --no-install-recommends -y \
     npm \
     openjdk-21-jdk \
     pkg-config \
-    python3-django \
-    python3-djangorestframework \
-    python3-pip \
+    python3-dotenv \
+    python3-fastapi \
     python3-termcolor \
+    pythoh3-uvicorn \
     python3-venv \
     python-is-python3 \
     unzip \
+    uvicorn \
     wget
 
 # Gradle 
@@ -63,6 +64,3 @@ WORKDIR /app
 # Install project dependencies
 RUN pnpm install -C backend/express
 RUN pnpm install -C tests
-
-ENV ADMIN_USERNAME
-ENV ADMIN_PASSWORD

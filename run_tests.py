@@ -117,12 +117,12 @@ setups = [
         ["./gradlew", "bootRun"],
     ),
     TestSetup(
-        "Python (Django)",
-        "django",
+        "Python (FastAPI)",
+        "fastapi",
         "127.0.0.1:8000",
-        "backend/django",
+        "backend/fastapi",
         [],
-        ["python", "manage.py", "runserver"],
+        ["uvicorn", "main:app"],
     ),
 ]
 
